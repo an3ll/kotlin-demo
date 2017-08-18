@@ -1,0 +1,70 @@
+buildscript {
+	ext {
+		kotlinVersion = '1.1.4'
+		springBootVersion = '2.0.0.BUILD-SNAPSHOT'
+	}
+	repositories {
+		mavenCentral()
+		jcenter()
+		maven { url "https://repo.spring.io/snapshot" }
+		maven { url "https://repo.spring.io/milestone" }
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
+		classpath('org.sgornostal:gradle-docker-plugin:1.5.3')
+		classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
+		classpath("org.jetbrains.kotlin:kotlin-noarg:${kotlinVersion}")
+	}
+}
+
+apply plugin: 'kotlin'
+apply plugin: 'application'
+apply plugin: 'kotlin-jpa'
+apply plugin: 'kotlin-spring'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'docker'
+
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+mainClassName = "se.an3ll.fleet.kotlindemo.KotlinDemoApplicationKt"
+
+compileKotlin {
+	kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+	kotlinOptions.jvmTarget = "1.8"
+}
+
+repositories {
+	mavenCentral()
+	maven { url "https://repo.spring.io/snapshot" }
+	maven { url "https://repo.spring.io/milestone" }
+}
+
+
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter-data-jpa')
+	compile('io.springfox:springfox-swagger2:2.7.0')
+	compile('io.springfox:springfox-swagger-ui:2.7.0')
+	compile('org.flywaydb:flyway-core')
+	compile('org.springframework.boot:spring-boot-starter-web')
+	compile("org.jetbrains.kotlin:kotlin-stdlib-jre8:${kotlinVersion}")
+	compile("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
+
+	runtime('org.postgresql:postgresql')
+
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+	testCompile('com.h2database:h2')
+}
+
+docker {
+	imageName = project.name + "-" + version
+	tags 'latest', project.version
+	files jar.archivePath
+	dependsOn compileKotlin
+}
+
