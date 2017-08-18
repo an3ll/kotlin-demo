@@ -12,7 +12,7 @@ buildscript {
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
 		classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
-		classpath('org.sgornostal:gradle-docker-plugin:1.5.3')
+		classpath('com.bmuschko:gradle-docker-plugin:3.0.12')
 		classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
 		classpath("org.jetbrains.kotlin:kotlin-noarg:${kotlinVersion}")
 	}
@@ -25,7 +25,7 @@ apply plugin: 'kotlin-spring'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
-apply plugin: 'docker'
+apply plugin: 'com.bmuschko.docker-java-application'
 
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
@@ -62,9 +62,11 @@ dependencies {
 }
 
 docker {
-	imageName = project.name + "-" + version
-	tags 'latest', project.version
-	files jar.archivePath
-	dependsOn compileKotlin
+	javaApplication {
+		baseImage = 'openjdk:8'
+		maintainer = 'Joakim An3ll'
+		ports = [8080]
+		tag = 'spring-boot-kotlin-demo'
+	}
 }
 
